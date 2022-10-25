@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salonproject/models/user_model.dart';
 import 'package:salonproject/states/authen.dart';
 import 'package:salonproject/states/main_customer.dart';
 import 'package:salonproject/states/main_hairdserse.dart';
@@ -26,10 +29,33 @@ String keyPage = Myconstant.keyAuthen;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp().then((value) {
-    runApp(const MyApp());
+    FirebaseAuth.instance.authStateChanges().listen(
+      (event) async {
+        if (event == null) {
+          runApp(const MyApp());
+        } else {
+          await FirebaseFirestore.instance
+              .collection('user')
+              .doc(event.uid)
+              .get()
+              .then((value) {
+            UserModel userModel = UserModel.fromMap(value.data()!);
+            switch (userModel.typeUser) {
+              case 'Customer':
+                keyPage = Myconstant.keyCustomer;
+                runApp(const MyApp());
+                break;
+              case 'Hairdresser':
+                keyPage = Myconstant.keyHairdresser;
+                runApp(const MyApp());
+                break;
+              default:
+            }
+          });
+        }
+      },
+    );
   });
-
-  
 }
 
 class MyApp extends StatelessWidget {
