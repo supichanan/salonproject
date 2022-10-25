@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salonproject/utility/my_constant.dart';
+import 'package:salonproject/widgets/widget_process.dart';
 import 'package:salonproject/widgets/widget_text.dart';
 import 'package:salonproject/widgets/widget_text_buttom.dart';
 
@@ -10,6 +11,15 @@ class MyDialog {
   MyDialog({
     required this.context,
   });
+
+  void processDialog() {
+    Get.dialog(WillPopScope(
+      child: const WidgetProcess(),
+      onWillPop: () async {
+        return false;
+      },
+    ));
+  }
 
   void normalDialog({required String title, required String subTitle}) {
     Get.dialog(
